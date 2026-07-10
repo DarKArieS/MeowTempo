@@ -5,6 +5,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:MeowTempo"
+    xmlns:automation="using:Microsoft.UI.Xaml.Automation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -60,7 +61,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+            <Grid x:Name="BeatIndicatorHost" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
@@ -69,23 +70,27 @@
                 </Grid.ColumnDefinitions>
 
 
-                <Border Grid.Column="0" Width="60" Height="60" Background="#97FF20" CornerRadius="38">
+                <Button x:Name="BeatButton0" Grid.Column="0" Width="60" Height="60" Padding="0" Background="#97FF20" Tag="0"
+                        BorderBrush="#97FF20" CornerRadius="38" Click="BeatButton_Click"
+                        automation:AutomationProperties.Name="第一拍：重拍">
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="32" FontWeight="Light"
                                Foreground="#4D7C16" Text="⌃" />
-                </Border>
+                </Button>
 
-                <Border Grid.Column="1"
-                        Width="60"
-                        Height="60"
-                        Background="#97FF20"
-                        CornerRadius="38">
-                    <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="32"
+                <Button x:Name="BeatButton1" Grid.Column="1" Width="60" Height="60" Padding="0" Background="#97FF20" Tag="1"
+                        BorderBrush="#97FF20" CornerRadius="38" Click="BeatButton_Click"
+                        automation:AutomationProperties.Name="第二拍：次重拍">
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="32"
                                Foreground="#4D7C16" Text="&gt;" />
-                </Border>
+                </Button>
 
-                <Ellipse Grid.Column="2" Width="60" Height="60" Fill="#97FF20" />
+                <Button x:Name="BeatButton2" Grid.Column="2" Width="60" Height="60" Padding="0" Background="#97FF20" Tag="2"
+                        BorderBrush="#97FF20" CornerRadius="38" Click="BeatButton_Click"
+                        automation:AutomationProperties.Name="第三拍：一般" />
 
-                <Ellipse Grid.Column="3" Width="60" Height="60" Stroke="#97FF20" StrokeThickness="3" />
+                <Button x:Name="BeatButton3" Grid.Column="3" Width="60" Height="60" Padding="0" Background="Transparent" Tag="3"
+                        BorderBrush="#97FF20" BorderThickness="3" CornerRadius="38" Click="BeatButton_Click"
+                        automation:AutomationProperties.Name="第四拍：不播放" />
             </Grid>
 
             <Grid Grid.Row="1" x:Name="ControlCardHost">
@@ -108,10 +113,14 @@
                                 <ColumnDefinition Width="40" />
                             </Grid.ColumnDefinitions>
 
-                            <Button Name="BpmDecreaseButton" Grid.Column="0" Padding="0" Background="Transparent" BorderBrush="Transparent"
-                                    Foreground="#D7D7D7" Content="−" FontSize="52" />
+                            <Button x:Name="BpmDecreaseButton" Grid.Column="0" Padding="0" Background="Transparent" BorderBrush="Transparent"
+                                    Foreground="#D7D7D7" Content="−" FontSize="52" PointerPressed="BpmButton_PointerPressed"
+                                    PointerReleased="BpmButton_PointerReleased" PointerCanceled="BpmButton_PointerCanceled"
+                                    automation:AutomationProperties.Name="降低 BPM" Tag="-1" />
 
-                            <Grid Grid.Column="1">
+                            <Grid x:Name="BpmDragArea" Grid.Column="1" PointerPressed="BpmDragArea_PointerPressed"
+                                  PointerMoved="BpmDragArea_PointerMoved" PointerReleased="BpmDragArea_PointerReleased"
+                                  PointerCanceled="BpmDragArea_PointerCanceled" automation:AutomationProperties.Name="拖曳調整 BPM">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
@@ -127,8 +136,10 @@
                                            FontSize="16" FontWeight="SemiBold" Foreground="#D7D7D7" Text="BPM" />
                             </Grid>
 
-                            <Button Name="BpmIncreaseButton" Grid.Column="2" HorizontalAlignment="Right" Padding="0" Background="Transparent"
-                                    BorderBrush="Transparent" Foreground="#D7D7D7" Content="+" FontSize="52" />
+                            <Button x:Name="BpmIncreaseButton" Grid.Column="2" HorizontalAlignment="Right" Padding="0" Background="Transparent"
+                                    BorderBrush="Transparent" Foreground="#D7D7D7" Content="+" FontSize="52" PointerPressed="BpmButton_PointerPressed"
+                                    PointerReleased="BpmButton_PointerReleased" PointerCanceled="BpmButton_PointerCanceled"
+                                    automation:AutomationProperties.Name="提高 BPM" Tag="1" />
                         </Grid>
 
                         <Border Grid.Row="1" Background="#777777" />
@@ -137,9 +148,9 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0"
+                            <Button x:Name="TapButton" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0"
                                     Background="Transparent" BorderBrush="Transparent" Foreground="#D7D7D7"
-                                    Content="TAP" FontSize="27" />
+                                    Content="TAP" FontSize="27" Click="TapButton_Click" automation:AutomationProperties.Name="以拍擊設定 BPM" />
                         </Grid>
                     </Grid>
                 </Border>
@@ -152,8 +163,11 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center"
-                           FontSize="35" FontWeight="Light" Foreground="#D7D7D7" Text="4/4" />
+                <Button x:Name="TimeSignatureButton" Grid.Column="0" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Padding="8" Background="Transparent" BorderBrush="Transparent" Click="TimeSignatureButton_Click"
+                        automation:AutomationProperties.Name="選擇拍號">
+                    <TextBlock x:Name="TimeSignatureText" FontSize="35" FontWeight="Light" Foreground="#D7D7D7" Text="4/4" />
+                </Button>
 
                 <Border Name="PlayButton"
                         Grid.Column="1"
@@ -166,16 +180,50 @@
                         BorderBrush="#757575"
                         BorderThickness="2"
                         CornerRadius="125">
-                    <Button Padding="20" Background="Transparent" BorderBrush="Transparent" Foreground="#D7D7D7">
-                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE768;" FontSize="82" />
+                    <Button x:Name="PlayPauseButton" Padding="20" Background="Transparent" BorderBrush="Transparent" Foreground="#D7D7D7"
+                            Click="PlayPauseButton_Click" automation:AutomationProperties.Name="開始播放節拍器">
+                        <FontIcon x:Name="PlayPauseIcon" FontFamily="Segoe Fluent Icons" Glyph="&#xE768;" FontSize="82" />
                     </Button>
                 </Border>
 
-                <Button Grid.Column="2" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center"
-                        Padding="0" Background="Transparent" BorderBrush="Transparent" Foreground="#D7D7D7">
+                <Button x:Name="SubdivisionButton" Grid.Column="2" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Padding="0" Background="Transparent" BorderBrush="Transparent" Foreground="#D7D7D7"
+                        Click="SubdivisionButton_Click" automation:AutomationProperties.Name="選擇節拍切分">
                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8D6;" FontSize="40" />
                 </Button>
             </Grid>
         </Grid>
+
+        <TeachingTip x:Name="TimeSignatureTeachingTip" Target="{x:Bind TimeSignatureButton}" Title="拍號"
+                     Subtitle="選擇每小節的拍數" IsLightDismissEnabled="True">
+            <StackPanel Spacing="8">
+                <Button Content="3/4" Tag="3" Click="TimeSignatureOption_Click" />
+                <Button Content="4/4" Tag="4" Click="TimeSignatureOption_Click" />
+            </StackPanel>
+        </TeachingTip>
+
+        <TeachingTip x:Name="SubdivisionTeachingTip" Target="{x:Bind SubdivisionButton}" Title="節拍切分"
+                     Subtitle="選擇每拍的子拍數" IsLightDismissEnabled="True">
+            <StackPanel Spacing="8">
+                <Button Tag="Quarter" Click="SubdivisionOption_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock FontSize="20" Text="♩" />
+                        <TextBlock VerticalAlignment="Center" Text="四分音符" />
+                    </StackPanel>
+                </Button>
+                <Button Tag="Eighth" Click="SubdivisionOption_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock FontSize="20" Text="♪" />
+                        <TextBlock VerticalAlignment="Center" Text="八分音符" />
+                    </StackPanel>
+                </Button>
+                <Button Tag="EighthTriplet" Click="SubdivisionOption_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock FontSize="20" Text="♪³" />
+                        <TextBlock VerticalAlignment="Center" Text="八分三連音" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </TeachingTip>
     </Grid>
 </Window>
