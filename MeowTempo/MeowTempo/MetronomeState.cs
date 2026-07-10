@@ -25,6 +25,14 @@ public enum MetronomeSound
     Silent
 }
 
+public sealed record MetronomeStateSnapshot(
+    int Bpm,
+    int BeatsPerMeasure,
+    BeatSubdivision Subdivision,
+    List<BeatType> BeatTypes,
+    int WindowWidth,
+    int WindowHeight);
+
 public sealed class MetronomeState
 {
     public const int MinimumBpm = 20;
@@ -46,6 +54,10 @@ public sealed class MetronomeState
 
     public BeatSubdivision Subdivision { get; private set; } = BeatSubdivision.Eighth;
 
+    public int WindowWidth { get; private set; }
+
+    public int WindowHeight { get; private set; }
+
     public IReadOnlyList<BeatType> BeatTypes => _beatTypes;
 
     public int SubdivisionsPerBeat => Subdivision switch
@@ -66,6 +78,64 @@ public sealed class MetronomeState
     public void AdjustBpm(int delta)
     {
         SetBpm(Bpm + delta);
+    }
+
+    public void SetWindowSize(int width, int height)
+    {
+        if (width <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(width));
+        }
+
+        if (height <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(height));
+        }
+
+        WindowWidth = width;
+        WindowHeight = height;
+    }
+
+    public MetronomeStateSnapshot CreateSnapshot() => new(
+        Bpm,
+        BeatsPerMeasure,
+        Subdivision,
+        new List<BeatType>(_beatTypes),
+        WindowWidth,
+        WindowHeight);
+
+    public void Restore(MetronomeStateSnapshot snapshot)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+
+        if (snapshot.BeatTypes is null || snapshot.BeatTypes.Count != snapshot.BeatsPerMeasure)
+        {
+            throw new ArgumentException("Beat types must match the time signature.", nameof(snapshot));
+        }
+
+        if (!Enum.IsDefined(snapshot.Subdivision))
+        {
+            throw new ArgumentException("Subdivision is invalid.", nameof(snapshot));
+        }
+
+        if (snapshot.BeatTypes.Exists(beatType => !Enum.IsDefined(beatType)))
+        {
+            throw new ArgumentException("Beat type is invalid.", nameof(snapshot));
+        }
+
+        SetBpm(snapshot.Bpm);
+        SetTimeSignature(snapshot.BeatsPerMeasure);
+        SetSubdivision(snapshot.Subdivision);
+
+        for (var index = 0; index < _beatTypes.Count; index++)
+        {
+            _beatTypes[index] = snapshot.BeatTypes[index];
+        }
+
+        if (snapshot.WindowWidth > 0 && snapshot.WindowHeight > 0)
+        {
+            SetWindowSize(snapshot.WindowWidth, snapshot.WindowHeight);
+        }
     }
 
     public void SetTimeSignature(int beatsPerMeasure)

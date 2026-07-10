@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.Foundation;
+using Windows.Graphics;
 using Windows.UI;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
@@ -20,6 +22,7 @@ public sealed partial class MainWindow : Window
     private static readonly SolidColorBrush SilentBeatBrush = new(Color.FromArgb(255, 117, 117, 117));
     private static readonly SolidColorBrush ActiveBeatBrush = new(Color.FromArgb(255, 215, 215, 215));
     private readonly MetronomeState _metronome = new();
+    private readonly MetronomeStateStorage _stateStorage = new();
     private readonly DispatcherTimer _bpmHoldTimer = new();
     private readonly List<long> _tapTimestamps = [];
     private readonly List<Button> _beatButtons = [];
@@ -34,15 +37,61 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        RestoreState();
+        UpdateWindowSize();
+        AppWindow.Changed += AppWindow_Changed;
 
         _bpmHoldTimer.Tick += BpmHoldTimer_Tick;
         _playback = new MetronomePlaybackService(_metronome);
         _playback.SubdivisionPlayed += Playback_SubdivisionPlayed;
-        Closed += (_, _) => _playback.Dispose();
+        Closed += (_, _) =>
+        {
+            AppWindow.Changed -= AppWindow_Changed;
+            _stateStorage.Save(_metronome.CreateSnapshot());
+            _playback.Dispose();
+        };
 
         UpdateBpmDisplay();
+        TimeSignatureText.Text = $"{_metronome.BeatsPerMeasure}/4";
         UpdateBeatIndicators();
         UpdateSubdivisionIcon();
+    }
+
+    private void RestoreState()
+    {
+        var snapshot = _stateStorage.Load();
+        if (snapshot is null)
+        {
+            return;
+        }
+
+        try
+        {
+            _metronome.Restore(snapshot);
+        }
+        catch (ArgumentException)
+        {
+            return;
+        }
+
+        if (_metronome.WindowWidth > 0 && _metronome.WindowHeight > 0)
+        {
+            AppWindow.Resize(new SizeInt32(_metronome.WindowWidth, _metronome.WindowHeight));
+        }
+    }
+
+    private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs args)
+    {
+        if (args.DidSizeChange)
+        {
+            UpdateWindowSize();
+        }
+    }
+
+    private void UpdateWindowSize()
+    {
+        var size = AppWindow.Size;
+        _metronome.SetWindowSize(size.Width, size.Height);
     }
 
     private void BpmButton_PointerPressed(object sender, PointerRoutedEventArgs e)
