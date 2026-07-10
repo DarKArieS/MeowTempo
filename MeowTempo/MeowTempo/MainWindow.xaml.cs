@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 
 namespace MeowTempo;
 
@@ -219,6 +220,46 @@ public sealed partial class MainWindow : Window
         UpdateBeatIndicators();
     }
 
+    private static void BeatButton_PointerEntered(object sender, PointerRoutedEventArgs e)
+    {
+        if (sender is Button button)
+        {
+            AnimateBeatButtonScale(button, 1.2);
+        }
+    }
+
+    private static void BeatButton_PointerExited(object sender, PointerRoutedEventArgs e)
+    {
+        if (sender is Button button)
+        {
+            AnimateBeatButtonScale(button, 1);
+        }
+    }
+
+    private static void AnimateBeatButtonScale(Button button, double scale)
+    {
+        var transform = (ScaleTransform)button.RenderTransform;
+        var easing = new CubicEase { EasingMode = EasingMode.EaseOut };
+        var duration = new Duration(TimeSpan.FromMilliseconds(140));
+        var storyboard = new Storyboard();
+
+        foreach (var property in new[] { nameof(ScaleTransform.ScaleX), nameof(ScaleTransform.ScaleY) })
+        {
+            var animation = new DoubleAnimation
+            {
+                To = scale,
+                Duration = duration,
+                EasingFunction = easing,
+                EnableDependentAnimation = true
+            };
+            Storyboard.SetTarget(animation, transform);
+            Storyboard.SetTargetProperty(animation, property);
+            storyboard.Children.Add(animation);
+        }
+
+        storyboard.Begin();
+    }
+
     private void TimeSignatureButton_Click(object sender, RoutedEventArgs e)
     {
         TimeSignatureTeachingTip.IsOpen = true;
@@ -298,6 +339,10 @@ public sealed partial class MainWindow : Window
             button.Background = activeBeatIndex == index ? ActiveBeatBrush : isSilent ? SilentBeatBrush : BeatGreenBrush;
             button.BorderBrush = BeatGreenBrush;
             button.BorderThickness = isSilent ? new Thickness(3) : new Thickness(1);
+            button.Resources["ButtonBackgroundPointerOver"] = button.Background;
+            button.Resources["ButtonBorderBrushPointerOver"] = button.BorderBrush;
+            button.Resources["ButtonBackgroundPressed"] = button.Background;
+            button.Resources["ButtonBorderBrushPressed"] = button.BorderBrush;
             AutomationProperties.SetName(button, $"第 {index + 1} 拍：{GetBeatTypeName(beatType)}");
         }
     }
@@ -321,9 +366,13 @@ public sealed partial class MainWindow : Window
                 Padding = new Thickness(0),
                 Tag = index,
                 BorderBrush = BeatGreenBrush,
-                CornerRadius = new CornerRadius(38)
+                CornerRadius = new CornerRadius(38),
+                RenderTransformOrigin = new Point(0.5, 0.5),
+                RenderTransform = new ScaleTransform()
             };
             button.Click += BeatButton_Click;
+            button.PointerEntered += BeatButton_PointerEntered;
+            button.PointerExited += BeatButton_PointerExited;
             BeatIndicatorHost.Children.Add(button);
             _beatButtons.Add(button);
         }

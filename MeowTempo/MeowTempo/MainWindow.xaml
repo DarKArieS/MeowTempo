@@ -179,10 +179,6 @@
                 <Button Content="4/4" Tag="4" Click="TimeSignatureOption_Click" />
                 <Button Content="5/4" Tag="5" Click="TimeSignatureOption_Click" />
                 <Button Content="6/4" Tag="6" Click="TimeSignatureOption_Click" />
-                <Button Content="7/4" Tag="7" Click="TimeSignatureOption_Click" />
-                <Button Content="8/4" Tag="8" Click="TimeSignatureOption_Click" />
-                <Button Content="9/4" Tag="9" Click="TimeSignatureOption_Click" />
-                <Button Content="12/4" Tag="12" Click="TimeSignatureOption_Click" />
             </StackPanel>
         </TeachingTip>
 

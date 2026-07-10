@@ -44,7 +44,7 @@ public sealed class MetronomeState
 
     public int BeatsPerMeasure { get; private set; } = 4;
 
-    public BeatSubdivision Subdivision { get; private set; } = BeatSubdivision.Quarter;
+    public BeatSubdivision Subdivision { get; private set; } = BeatSubdivision.Eighth;
 
     public IReadOnlyList<BeatType> BeatTypes => _beatTypes;
 
