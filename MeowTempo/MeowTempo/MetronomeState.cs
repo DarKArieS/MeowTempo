@@ -31,7 +31,9 @@ public sealed record MetronomeStateSnapshot(
     BeatSubdivision Subdivision,
     List<BeatType> BeatTypes,
     int WindowWidth,
-    int WindowHeight);
+    int WindowHeight,
+    int? WindowX,
+    int? WindowY);
 
 public sealed class MetronomeState
 {
@@ -57,6 +59,10 @@ public sealed class MetronomeState
     public int WindowWidth { get; private set; }
 
     public int WindowHeight { get; private set; }
+
+    public int? WindowX { get; private set; }
+
+    public int? WindowY { get; private set; }
 
     public IReadOnlyList<BeatType> BeatTypes => _beatTypes;
 
@@ -96,13 +102,21 @@ public sealed class MetronomeState
         WindowHeight = height;
     }
 
+    public void SetWindowPosition(int x, int y)
+    {
+        WindowX = x;
+        WindowY = y;
+    }
+
     public MetronomeStateSnapshot CreateSnapshot() => new(
         Bpm,
         BeatsPerMeasure,
         Subdivision,
         new List<BeatType>(_beatTypes),
         WindowWidth,
-        WindowHeight);
+        WindowHeight,
+        WindowX,
+        WindowY);
 
     public void Restore(MetronomeStateSnapshot snapshot)
     {
@@ -135,6 +149,11 @@ public sealed class MetronomeState
         if (snapshot.WindowWidth > 0 && snapshot.WindowHeight > 0)
         {
             SetWindowSize(snapshot.WindowWidth, snapshot.WindowHeight);
+        }
+
+        if (snapshot.WindowX is int windowX && snapshot.WindowY is int windowY)
+        {
+            SetWindowPosition(windowX, windowY);
         }
     }
 

@@ -38,7 +38,7 @@ public sealed partial class MainWindow : Window
     {
         InitializeComponent();
         RestoreState();
-        UpdateWindowSize();
+        UpdateWindowBounds();
         AppWindow.Changed += AppWindow_Changed;
 
         _bpmHoldTimer.Tick += BpmHoldTimer_Tick;
@@ -78,20 +78,28 @@ public sealed partial class MainWindow : Window
         {
             AppWindow.Resize(new SizeInt32(_metronome.WindowWidth, _metronome.WindowHeight));
         }
+
+        if (_metronome.WindowX is int windowX && _metronome.WindowY is int windowY)
+        {
+            AppWindow.Move(new PointInt32(windowX, windowY));
+        }
     }
 
     private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs args)
     {
-        if (args.DidSizeChange)
+        if (args.DidSizeChange || args.DidPositionChange)
         {
-            UpdateWindowSize();
+            UpdateWindowBounds();
         }
     }
 
-    private void UpdateWindowSize()
+    private void UpdateWindowBounds()
     {
         var size = AppWindow.Size;
         _metronome.SetWindowSize(size.Width, size.Height);
+
+        var position = AppWindow.Position;
+        _metronome.SetWindowPosition(position.X, position.Y);
     }
 
     private void BpmButton_PointerPressed(object sender, PointerRoutedEventArgs e)
