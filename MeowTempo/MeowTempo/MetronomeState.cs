@@ -35,9 +35,9 @@ public sealed class MetronomeState
     private readonly List<BeatType> _beatTypes =
     [
         BeatType.Accent,
-        BeatType.SecondaryAccent,
         BeatType.Normal,
-        BeatType.Silent
+        BeatType.Accent,
+        BeatType.Normal
     ];
 
     public int Bpm { get; private set; } = 110;

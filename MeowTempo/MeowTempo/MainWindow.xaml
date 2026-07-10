@@ -84,10 +84,13 @@
                                 <ColumnDefinition Width="40" />
                             </Grid.ColumnDefinitions>
 
-                            <Button x:Name="BpmDecreaseButton" Grid.Column="0" Padding="0" Background="Transparent" BorderBrush="Transparent"
-                                    Foreground="#D7D7D7" Content="−" FontSize="52" PointerPressed="BpmButton_PointerPressed"
-                                    PointerReleased="BpmButton_PointerReleased" PointerCanceled="BpmButton_PointerCanceled"
-                                    automation:AutomationProperties.Name="降低 BPM" Tag="-1" />
+                            <Button x:Name="BpmDecreaseButton" Grid.Column="0" Padding="0" Background="Transparent"
+                                    BorderBrush="Transparent"
+                                    Foreground="#D7D7D7" Content="−" FontSize="52"
+                                    PointerPressed="BpmButton_PointerPressed"
+                                    PointerReleased="BpmButton_PointerReleased"
+                                    PointerCanceled="BpmButton_PointerCanceled"
+                                    Click="BpmButton_Click" automation:AutomationProperties.Name="降低 BPM" Tag="-1" />
 
                             <Grid x:Name="BpmDragArea" Grid.Column="1" PointerPressed="BpmDragArea_PointerPressed"
                                   PointerMoved="BpmDragArea_PointerMoved" PointerReleased="BpmDragArea_PointerReleased"
@@ -107,10 +110,13 @@
                                            FontSize="16" FontWeight="SemiBold" Foreground="#D7D7D7" Text="BPM" />
                             </Grid>
 
-                            <Button x:Name="BpmIncreaseButton" Grid.Column="2" HorizontalAlignment="Right" Padding="0" Background="Transparent"
-                                    BorderBrush="Transparent" Foreground="#D7D7D7" Content="+" FontSize="52" PointerPressed="BpmButton_PointerPressed"
-                                    PointerReleased="BpmButton_PointerReleased" PointerCanceled="BpmButton_PointerCanceled"
-                                    automation:AutomationProperties.Name="提高 BPM" Tag="1" />
+                            <Button x:Name="BpmIncreaseButton" Grid.Column="2" HorizontalAlignment="Right" Padding="0"
+                                    Background="Transparent"
+                                    BorderBrush="Transparent" Foreground="#D7D7D7" Content="+" FontSize="52"
+                                    PointerPressed="BpmButton_PointerPressed"
+                                    PointerReleased="BpmButton_PointerReleased"
+                                    PointerCanceled="BpmButton_PointerCanceled"
+                                    Click="BpmButton_Click" automation:AutomationProperties.Name="提高 BPM" Tag="1" />
                         </Grid>
 
                         <Border Grid.Row="1" Background="#777777" />
@@ -160,7 +166,7 @@
                 <Button x:Name="SubdivisionButton" Grid.Column="2" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center"
                         Padding="0" Background="Transparent" BorderBrush="Transparent" Foreground="#D7D7D7"
                         Click="SubdivisionButton_Click" automation:AutomationProperties.Name="選擇節拍切分">
-                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8D6;" FontSize="40" />
+                    <TextBlock FontSize="40" Text="♩" />
                 </Button>
             </Grid>
         </Grid>

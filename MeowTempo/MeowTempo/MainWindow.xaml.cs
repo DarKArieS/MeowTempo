@@ -25,6 +25,7 @@ public sealed partial class MainWindow : Window
     private readonly MetronomePlaybackService _playback;
     private int _bpmHoldDelta;
     private bool _bpmHoldRepeating;
+    private bool _suppressNextBpmClick;
     private uint? _dragPointerId;
     private Point _lastDragPosition;
     private double _dragRemainder;
@@ -40,6 +41,7 @@ public sealed partial class MainWindow : Window
 
         UpdateBpmDisplay();
         UpdateBeatIndicators();
+        UpdateSubdivisionIcon();
     }
 
     private void BpmButton_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -50,25 +52,41 @@ public sealed partial class MainWindow : Window
         }
 
         button.CapturePointer(e.Pointer);
-        _metronome.AdjustBpm(_bpmHoldDelta);
-        UpdateBpmDisplay();
-
+        _suppressNextBpmClick = false;
         _bpmHoldRepeating = false;
         _bpmHoldTimer.Interval = TimeSpan.FromMilliseconds(450);
         _bpmHoldTimer.Start();
-        e.Handled = true;
+    }
+
+    private void BpmButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_bpmHoldRepeating)
+        {
+            _suppressNextBpmClick = true;
+            return;
+        }
+
+        if (_suppressNextBpmClick)
+        {
+            _suppressNextBpmClick = false;
+            return;
+        }
+
+        if (sender is Button { Tag: not null } button && int.TryParse(button.Tag.ToString(), out var delta))
+        {
+            _metronome.AdjustBpm(delta);
+            UpdateBpmDisplay();
+        }
     }
 
     private void BpmButton_PointerReleased(object sender, PointerRoutedEventArgs e)
     {
-        StopBpmHold(sender as UIElement);
-        e.Handled = true;
+        StopBpmHold(sender as UIElement, suppressClick: true);
     }
 
     private void BpmButton_PointerCanceled(object sender, PointerRoutedEventArgs e)
     {
-        StopBpmHold(sender as UIElement);
-        e.Handled = true;
+        StopBpmHold(sender as UIElement, suppressClick: false);
     }
 
     private void BpmHoldTimer_Tick(object? sender, object e)
@@ -83,10 +101,11 @@ public sealed partial class MainWindow : Window
         UpdateBpmDisplay();
     }
 
-    private void StopBpmHold(UIElement? element)
+    private void StopBpmHold(UIElement? element, bool suppressClick)
     {
         element?.ReleasePointerCaptures();
         _bpmHoldTimer.Stop();
+        _suppressNextBpmClick = suppressClick && _bpmHoldRepeating;
         _bpmHoldRepeating = false;
         _bpmHoldDelta = 0;
     }
@@ -229,6 +248,7 @@ public sealed partial class MainWindow : Window
         {
             _metronome.SetSubdivision(subdivision);
             _playback.ResetSchedule();
+            UpdateSubdivisionIcon();
         }
 
         SubdivisionTeachingTip.IsOpen = false;
@@ -238,6 +258,22 @@ public sealed partial class MainWindow : Window
     {
         BpmNumber.Text = _metronome.Bpm.ToString();
         _playback.SyncState();
+    }
+
+    private void UpdateSubdivisionIcon()
+    {
+        if (SubdivisionButton.Content is not TextBlock icon)
+        {
+            return;
+        }
+
+        icon.Text = _metronome.Subdivision switch
+        {
+            BeatSubdivision.Quarter => "♩",
+            BeatSubdivision.Eighth => "♪",
+            BeatSubdivision.EighthTriplet => "♪³",
+            _ => "♩"
+        };
     }
 
     private void UpdateBeatIndicators(int? activeBeatIndex = null)
