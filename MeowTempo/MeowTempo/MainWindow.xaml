@@ -61,37 +61,8 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Grid x:Name="BeatIndicatorHost" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-
-                <Button x:Name="BeatButton0" Grid.Column="0" Width="60" Height="60" Padding="0" Background="#97FF20" Tag="0"
-                        BorderBrush="#97FF20" CornerRadius="38" Click="BeatButton_Click"
-                        automation:AutomationProperties.Name="第一拍：重拍">
-                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="32" FontWeight="Light"
-                               Foreground="#4D7C16" Text="⌃" />
-                </Button>
-
-                <Button x:Name="BeatButton1" Grid.Column="1" Width="60" Height="60" Padding="0" Background="#97FF20" Tag="1"
-                        BorderBrush="#97FF20" CornerRadius="38" Click="BeatButton_Click"
-                        automation:AutomationProperties.Name="第二拍：次重拍">
-                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="32"
-                               Foreground="#4D7C16" Text="&gt;" />
-                </Button>
-
-                <Button x:Name="BeatButton2" Grid.Column="2" Width="60" Height="60" Padding="0" Background="#97FF20" Tag="2"
-                        BorderBrush="#97FF20" CornerRadius="38" Click="BeatButton_Click"
-                        automation:AutomationProperties.Name="第三拍：一般" />
-
-                <Button x:Name="BeatButton3" Grid.Column="3" Width="60" Height="60" Padding="0" Background="Transparent" Tag="3"
-                        BorderBrush="#97FF20" BorderThickness="3" CornerRadius="38" Click="BeatButton_Click"
-                        automation:AutomationProperties.Name="第四拍：不播放" />
-            </Grid>
+            <StackPanel x:Name="BeatIndicatorHost" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Orientation="Horizontal" Spacing="20" />
 
             <Grid Grid.Row="1" x:Name="ControlCardHost">
                 <Grid.RowDefinitions>
@@ -197,8 +168,15 @@
         <TeachingTip x:Name="TimeSignatureTeachingTip" Target="{x:Bind TimeSignatureButton}" Title="拍號"
                      Subtitle="選擇每小節的拍數" IsLightDismissEnabled="True">
             <StackPanel Spacing="8">
+                <Button Content="2/4" Tag="2" Click="TimeSignatureOption_Click" />
                 <Button Content="3/4" Tag="3" Click="TimeSignatureOption_Click" />
                 <Button Content="4/4" Tag="4" Click="TimeSignatureOption_Click" />
+                <Button Content="5/4" Tag="5" Click="TimeSignatureOption_Click" />
+                <Button Content="6/4" Tag="6" Click="TimeSignatureOption_Click" />
+                <Button Content="7/4" Tag="7" Click="TimeSignatureOption_Click" />
+                <Button Content="8/4" Tag="8" Click="TimeSignatureOption_Click" />
+                <Button Content="9/4" Tag="9" Click="TimeSignatureOption_Click" />
+                <Button Content="12/4" Tag="12" Click="TimeSignatureOption_Click" />
             </StackPanel>
         </TeachingTip>
 

@@ -16,10 +16,12 @@ public sealed partial class MainWindow : Window
     private const double BpmDragStepPixels = 12;
     private static readonly SolidColorBrush BeatGreenBrush = new(Color.FromArgb(255, 151, 255, 32));
     private static readonly SolidColorBrush BeatForegroundBrush = new(Color.FromArgb(255, 77, 124, 22));
+    private static readonly SolidColorBrush SilentBeatBrush = new(Color.FromArgb(255, 117, 117, 117));
     private static readonly SolidColorBrush ActiveBeatBrush = new(Color.FromArgb(255, 215, 215, 215));
     private readonly MetronomeState _metronome = new();
     private readonly DispatcherTimer _bpmHoldTimer = new();
     private readonly List<long> _tapTimestamps = [];
+    private readonly List<Button> _beatButtons = [];
     private readonly MetronomePlaybackService _playback;
     private int _bpmHoldDelta;
     private bool _bpmHoldRepeating;
@@ -235,42 +237,56 @@ public sealed partial class MainWindow : Window
 
     private void UpdateBeatIndicators(int? activeBeatIndex = null)
     {
-        for (var index = 0; index < 4; index++)
-        {
-            var button = GetBeatButton(index);
-            button.Visibility = index < _metronome.BeatsPerMeasure ? Visibility.Visible : Visibility.Collapsed;
-            if (button.Visibility == Visibility.Collapsed)
-            {
-                continue;
-            }
+        EnsureBeatButtons();
 
+        for (var index = 0; index < _beatButtons.Count; index++)
+        {
+            var button = _beatButtons[index];
             var beatType = _metronome.BeatTypes[index];
             var isSilent = beatType == BeatType.Silent;
             button.Content = beatType switch
             {
                 BeatType.Accent => "⌃",
                 BeatType.SecondaryAccent => ">",
-                BeatType.Normal => "●",
-                BeatType.Silent => string.Empty,
+                BeatType.Normal => " ",
+                BeatType.Silent => " ",
                 _ => string.Empty
             };
             button.FontSize = 28;
             button.Foreground = BeatForegroundBrush;
-            button.Background = activeBeatIndex == index ? ActiveBeatBrush : isSilent ? null : BeatGreenBrush;
+            button.Background = activeBeatIndex == index ? ActiveBeatBrush : isSilent ? SilentBeatBrush : BeatGreenBrush;
             button.BorderBrush = BeatGreenBrush;
             button.BorderThickness = isSilent ? new Thickness(3) : new Thickness(1);
             AutomationProperties.SetName(button, $"第 {index + 1} 拍：{GetBeatTypeName(beatType)}");
         }
     }
 
-    private Button GetBeatButton(int index) => index switch
+    private void EnsureBeatButtons()
     {
-        0 => BeatButton0,
-        1 => BeatButton1,
-        2 => BeatButton2,
-        3 => BeatButton3,
-        _ => throw new ArgumentOutOfRangeException(nameof(index))
-    };
+        if (_beatButtons.Count == _metronome.BeatsPerMeasure)
+        {
+            return;
+        }
+
+        BeatIndicatorHost.Children.Clear();
+        _beatButtons.Clear();
+
+        for (var index = 0; index < _metronome.BeatsPerMeasure; index++)
+        {
+            var button = new Button
+            {
+                Width = 60,
+                Height = 60,
+                Padding = new Thickness(0),
+                Tag = index,
+                BorderBrush = BeatGreenBrush,
+                CornerRadius = new CornerRadius(38)
+            };
+            button.Click += BeatButton_Click;
+            BeatIndicatorHost.Children.Add(button);
+            _beatButtons.Add(button);
+        }
+    }
 
     private static string GetBeatTypeName(BeatType beatType) => beatType switch
     {

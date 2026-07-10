@@ -29,6 +29,8 @@ public sealed class MetronomeState
 {
     public const int MinimumBpm = 20;
     public const int MaximumBpm = 300;
+    public const int MinimumBeatsPerMeasure = 1;
+    public const int MaximumBeatsPerMeasure = 32;
 
     private readonly List<BeatType> _beatTypes =
     [
@@ -68,12 +70,22 @@ public sealed class MetronomeState
 
     public void SetTimeSignature(int beatsPerMeasure)
     {
-        if (beatsPerMeasure is not (3 or 4))
+        if (beatsPerMeasure is < MinimumBeatsPerMeasure or > MaximumBeatsPerMeasure)
         {
             throw new ArgumentOutOfRangeException(nameof(beatsPerMeasure));
         }
 
-        BeatsPerMeasure = beatsPerMeasure;
+        while (_beatTypes.Count < beatsPerMeasure)
+        {
+            _beatTypes.Add(BeatType.Normal);
+        }
+
+        if (_beatTypes.Count > beatsPerMeasure)
+        {
+            _beatTypes.RemoveRange(beatsPerMeasure, _beatTypes.Count - beatsPerMeasure);
+        }
+
+        BeatsPerMeasure = _beatTypes.Count;
     }
 
     public void SetSubdivision(BeatSubdivision subdivision)
