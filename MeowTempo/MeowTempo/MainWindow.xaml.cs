@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Windows.Foundation;
+using Windows.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using Windows.Foundation;
-using Windows.UI;
 
 namespace MeowTempo;
 
@@ -180,6 +180,11 @@ public sealed partial class MainWindow : Window
 
     private void Playback_SubdivisionPlayed(object? sender, SubdivisionPlayedEventArgs e)
     {
+        if (e.SubdivisionIndex != 0)
+        {
+            return;
+        }
+
         UpdateBeatIndicators(e.BeatIndex);
     }
 
@@ -232,7 +237,7 @@ public sealed partial class MainWindow : Window
     private void UpdateBpmDisplay()
     {
         BpmNumber.Text = _metronome.Bpm.ToString();
-        _playback.ResetSchedule();
+        _playback.SyncState();
     }
 
     private void UpdateBeatIndicators(int? activeBeatIndex = null)
