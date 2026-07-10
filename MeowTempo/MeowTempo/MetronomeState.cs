@@ -110,17 +110,22 @@ public sealed class MetronomeState
             throw new ArgumentOutOfRangeException(nameof(subdivisionIndex));
         }
 
+        var beatType = _beatTypes[beatIndex];
+        if (beatType == BeatType.Silent)
+        {
+            return MetronomeSound.Silent;
+        }
+
         if (subdivisionIndex > 0)
         {
             return MetronomeSound.Do;
         }
 
-        return _beatTypes[beatIndex] switch
+        return beatType switch
         {
             BeatType.Accent or BeatType.SecondaryAccent => MetronomeSound.Di,
             BeatType.Normal => MetronomeSound.Do,
-            BeatType.Silent => MetronomeSound.Silent,
-            _ => throw new InvalidOperationException($"Unknown beat type: {_beatTypes[beatIndex]}.")
+            _ => throw new InvalidOperationException($"Unknown beat type: {beatType}.")
         };
     }
 

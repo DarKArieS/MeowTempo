@@ -419,16 +419,21 @@ public sealed class MetronomePlaybackService : IDisposable
 
         public MetronomeSound GetSound(int beatIndex, int subdivisionIndex)
         {
+            var beatType = beatTypes[beatIndex];
+            if (beatType == BeatType.Silent)
+            {
+                return MetronomeSound.Silent;
+            }
+
             if (subdivisionIndex > 0)
             {
                 return MetronomeSound.Do;
             }
 
-            return beatTypes[beatIndex] switch
+            return beatType switch
             {
                 BeatType.Accent or BeatType.SecondaryAccent => MetronomeSound.Di,
                 BeatType.Normal => MetronomeSound.Do,
-                BeatType.Silent => MetronomeSound.Silent,
                 _ => MetronomeSound.Silent
             };
         }
