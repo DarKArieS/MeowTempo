@@ -42,6 +42,19 @@ public sealed partial class MainWindow : Window
         AppWindow.Changed += AppWindow_Changed;
 
         _bpmHoldTimer.Tick += BpmHoldTimer_Tick;
+
+        // Button marks pointer events as Handled internally, so XAML-attached
+        // handlers never fire. Register with handledEventsToo to enable long-press.
+        foreach (var bpmButton in new[] { BpmDecreaseButton, BpmIncreaseButton })
+        {
+            bpmButton.AddHandler(UIElement.PointerPressedEvent,
+                new PointerEventHandler(BpmButton_PointerPressed), handledEventsToo: true);
+            bpmButton.AddHandler(UIElement.PointerReleasedEvent,
+                new PointerEventHandler(BpmButton_PointerReleased), handledEventsToo: true);
+            bpmButton.AddHandler(UIElement.PointerCanceledEvent,
+                new PointerEventHandler(BpmButton_PointerCanceled), handledEventsToo: true);
+        }
+
         _playback = new MetronomePlaybackService(_metronome);
         _playback.SubdivisionPlayed += Playback_SubdivisionPlayed;
         Closed += (_, _) =>

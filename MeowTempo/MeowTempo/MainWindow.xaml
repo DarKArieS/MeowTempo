@@ -87,9 +87,6 @@
                             <Button x:Name="BpmDecreaseButton" Grid.Column="0" Padding="0" Background="Transparent"
                                     BorderBrush="Transparent"
                                     Foreground="#D7D7D7" Content="−" FontSize="52"
-                                    PointerPressed="BpmButton_PointerPressed"
-                                    PointerReleased="BpmButton_PointerReleased"
-                                    PointerCanceled="BpmButton_PointerCanceled"
                                     Click="BpmButton_Click" automation:AutomationProperties.Name="降低 BPM" Tag="-1" />
 
                             <Grid x:Name="BpmDragArea" Grid.Column="1" PointerPressed="BpmDragArea_PointerPressed"
@@ -106,16 +103,13 @@
                                 <TextBlock Name="BpmNumber" Grid.Column="1" HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
                                            FontSize="70" FontWeight="Light" Foreground="#D7D7D7" Text="110" />
-                                <TextBlock Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                <TextBlock Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="8,0,0,0"
                                            FontSize="16" FontWeight="SemiBold" Foreground="#D7D7D7" Text="BPM" />
                             </Grid>
 
                             <Button x:Name="BpmIncreaseButton" Grid.Column="2" HorizontalAlignment="Right" Padding="0"
                                     Background="Transparent"
                                     BorderBrush="Transparent" Foreground="#D7D7D7" Content="+" FontSize="52"
-                                    PointerPressed="BpmButton_PointerPressed"
-                                    PointerReleased="BpmButton_PointerReleased"
-                                    PointerCanceled="BpmButton_PointerCanceled"
                                     Click="BpmButton_Click" automation:AutomationProperties.Name="提高 BPM" Tag="1" />
                         </Grid>
 
