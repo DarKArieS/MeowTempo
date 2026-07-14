@@ -70,14 +70,14 @@
                 </Grid.RowDefinitions>
 
                 <Border Grid.Row="0" Background="#353535" BorderBrush="#757575" BorderThickness="2" CornerRadius="20">
-                    <Grid Padding="32,0">
+                    <Grid Padding="16,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="2*" />
                             <RowDefinition Height="2" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <Grid Grid.Row="0">
+                        <Grid Grid.Row="0" HorizontalAlignment="Stretch">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="40" />
                                 <ColumnDefinition Width="*" />
@@ -94,7 +94,7 @@
                                   PointerCanceled="BpmDragArea_PointerCanceled" automation:AutomationProperties.Name="拖曳調整 BPM">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
@@ -127,15 +127,15 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="2" x:Name="FooterHost">
+            <Grid Grid.Row="2" x:Name="FooterHost" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
 
                 <Button x:Name="TimeSignatureButton" Grid.Column="0" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center"
-                        Padding="8" Background="Transparent" BorderBrush="Transparent" Click="TimeSignatureButton_Click"
+                        Padding="16,0" Background="Transparent" BorderBrush="Transparent" Click="TimeSignatureButton_Click"
                         automation:AutomationProperties.Name="選擇拍號">
                     <TextBlock x:Name="TimeSignatureText" FontSize="35" FontWeight="Light" Foreground="#D7D7D7" Text="4/4" />
                 </Button>
@@ -158,7 +158,7 @@
                 </Border>
 
                 <Button x:Name="SubdivisionButton" Grid.Column="2" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center"
-                        Padding="0" Background="Transparent" BorderBrush="Transparent" Foreground="#D7D7D7"
+                        Padding="16,0" Background="Transparent" BorderBrush="Transparent" Foreground="#D7D7D7"
                         Click="SubdivisionButton_Click" automation:AutomationProperties.Name="選擇節拍切分">
                     <TextBlock FontSize="40" Text="♩" />
                 </Button>
