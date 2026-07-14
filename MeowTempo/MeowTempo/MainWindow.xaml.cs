@@ -125,7 +125,7 @@ public sealed partial class MainWindow : Window
         button.CapturePointer(e.Pointer);
         _suppressNextBpmClick = false;
         _bpmHoldRepeating = false;
-        _bpmHoldTimer.Interval = TimeSpan.FromMilliseconds(450);
+        _bpmHoldTimer.Interval = TimeSpan.FromMilliseconds(800);
         _bpmHoldTimer.Start();
     }
 
@@ -165,7 +165,7 @@ public sealed partial class MainWindow : Window
         if (!_bpmHoldRepeating)
         {
             _bpmHoldRepeating = true;
-            _bpmHoldTimer.Interval = TimeSpan.FromMilliseconds(120);
+            _bpmHoldTimer.Interval = TimeSpan.FromMilliseconds(300);
         }
 
         _metronome.AdjustBpm(_bpmHoldDelta * 10);
